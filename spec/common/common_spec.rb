@@ -31,6 +31,11 @@ describe interface('virbr0'), :if => os[:family] == 'redhat' do
   it { should_not exist }
 end
 
+# enabel enp0s3
+describe interface('enp0s3'), :if => os[:family] == 'redhat' do
+  it { should exist }
+end
+
 # enable chronyd
 describe service('chronyd'), :if => os[:family] == 'redhat' do
   it { should be_enabled }
