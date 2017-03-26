@@ -5,12 +5,12 @@ describe file('/etc/redhat-release'), :if => os[:family] == 'redhat' do
   its(:content) { should match "Red Hat Enterprise Linux Server release 7.3 (Maipo)\n" }
 end
 
-# check partition device
+# check partition
 partition = [
-             { m_point: '/boot/efi', m_device: '/dev/sda1', m_type: 'vfat' },
-             { m_point: '/boot', m_device: '/dev/sda2', m_type: 'xfs' },
-             { m_point: '/dump', m_device: '/dev/sda3', m_type: 'xfs' },
-             { m_point: '/', m_device: '/dev/sda5', m_type: 'xfs' },
+             { m_point: '/boot/efi', m_device: '/dev/sda1', m_type: 'vfat', m_size: 262144, m_size_match: true },
+             { m_point: '/boot', m_device: '/dev/sda2', m_type: 'xfs', m_size: 524288, m_size_match: true },
+             { m_point: '/dump', m_device: '/dev/sda3', m_type: 'xfs', m_size: (host_inventory['memory']['total'].to_i * 1.1).to_i, m_size_match: false },
+             { m_point: '/', m_device: '/dev/sda5', m_type: 'xfs', m_size: 40 * 1024, m_size_match: false },
             ]
 
 partition.each do |part|
@@ -22,11 +22,25 @@ partition.each do |part|
                             )
     end
   end
+
+  describe command("fdisk -s #{part[:m_device]}") do
+    if part[:m_size_match]
+      its('stdout.to_i') { should eq part[:m_size] }
+    else
+      its('stdout.to_i') { should >= part[:m_size] }
+    end
+  end
 end
 
 describe file('/proc/swaps') do
   its(:content) { should match /^\/dev\/sda4 *partition *.*$/ }
 end
+
+describe command("fdisk -s /dev/sda4") do
+  its('stdout.to_i') { should >= host_inventory['memory']['total'].to_i * 2 }
+end
+# check partition size
+
 
 # disable selinux
 describe selinux, :if => os[:family] == 'redhat' do
