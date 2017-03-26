@@ -14,7 +14,6 @@ partition = [
             ]
 
 partition.each do |part|
-  p part
   describe file(part[:m_point]) do
     it do
       should be_mounted.with(
