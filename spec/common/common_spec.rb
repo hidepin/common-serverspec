@@ -96,6 +96,10 @@ describe service('chronyd'), :if => os[:family] == 'redhat' do
   it { should be_running }
 end
 
+describe command('chronyc sources'), :if => os[:family] == 'redhat' do
+  its(:stdout) { should match /^\^\*/ }
+end
+
 # enable kdump
 describe service('kdump'), :if => os[:family] == 'redhat' do
   it { should be_enabled }
