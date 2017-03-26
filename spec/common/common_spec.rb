@@ -5,6 +5,47 @@ describe file('/etc/redhat-release'), :if => os[:family] == 'redhat' do
   its(:content) { should match "Red Hat Enterprise Linux Server release 7.3 (Maipo)\n" }
 end
 
+# check partition device
+describe file('/boot/efi') do
+  it do
+    should be_mounted.with(
+      :device  => '/dev/sda1',
+      :type    => 'vfat'
+    )
+  end
+end
+
+describe file('/boot') do
+  it do
+    should be_mounted.with(
+      :device  => '/dev/sda2',
+      :type    => 'xfs'
+    )
+  end
+end
+
+describe file('/dump') do
+  it do
+    should be_mounted.with(
+      :device  => '/dev/sda3',
+      :type    => 'xfs'
+    )
+  end
+end
+
+describe file('/') do
+  it do
+    should be_mounted.with(
+      :device  => '/dev/sda5',
+      :type    => 'xfs'
+    )
+  end
+end
+
+describe file('/proc/swaps') do
+  its(:content) { should match /^\/dev\/sda4 *partition *.*$/ }
+end
+
 # disable selinux
 describe selinux, :if => os[:family] == 'redhat' do
   it { should be_disabled }
