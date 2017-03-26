@@ -51,6 +51,19 @@ describe command('rpm -qa | sort'), :if => os[:family] == 'redhat' do
   its(:stdout) { should match rpmlist }
 end
 
+# check tuned
+describe file('/etc/tuned/default/tuned.conf'), :if => os[:family] == 'redhat' do
+  its(:content) { should match /^include *= *virtual-guest$/ }
+end
+
+describe command('sysctl -a'), :if => os[:family] == 'redhat' do
+  its(:stdout) { should match /^net.ipv4.ip_local_port_range = 32770\t*64999$/ }
+  its(:stdout) { should match /^net.core.somaxconn = 511$/ }
+  its(:stdout) { should match /^net.ipv4.tcp_keepalive_intvl = 5$/ }
+  its(:stdout) { should match /^net.ipv4.tcp_keepalive_probes = 5$/ }
+  its(:stdout) { should match /^net.ipv4.tcp_keepalive_time = 60$/ }
+end
+
 # disable selinux
 describe selinux, :if => os[:family] == 'redhat' do
   it { should be_disabled }
