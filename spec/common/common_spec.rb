@@ -6,39 +6,22 @@ describe file('/etc/redhat-release'), :if => os[:family] == 'redhat' do
 end
 
 # check partition device
-describe file('/boot/efi') do
-  it do
-    should be_mounted.with(
-      :device  => '/dev/sda1',
-      :type    => 'vfat'
-    )
-  end
-end
+partition = [
+             { m_point: '/boot/efi', m_device: '/dev/sda1', m_type: 'vfat' },
+             { m_point: '/boot', m_device: '/dev/sda2', m_type: 'xfs' },
+             { m_point: '/dump', m_device: '/dev/sda3', m_type: 'xfs' },
+             { m_point: '/', m_device: '/dev/sda5', m_type: 'xfs' },
+            ]
 
-describe file('/boot') do
-  it do
-    should be_mounted.with(
-      :device  => '/dev/sda2',
-      :type    => 'xfs'
-    )
-  end
-end
-
-describe file('/dump') do
-  it do
-    should be_mounted.with(
-      :device  => '/dev/sda3',
-      :type    => 'xfs'
-    )
-  end
-end
-
-describe file('/') do
-  it do
-    should be_mounted.with(
-      :device  => '/dev/sda5',
-      :type    => 'xfs'
-    )
+partition.each do |part|
+  p part
+  describe file(part[:m_point]) do
+    it do
+      should be_mounted.with(
+                             :device  => part[:m_device],
+                             :type    => part[:m_type],
+                            )
+    end
   end
 end
 
