@@ -85,9 +85,11 @@ describe interface('virbr0'), :if => os[:family] == 'redhat' do
   it { should_not exist }
 end
 
-# enabel enp0s3
-describe interface('enp0s3'), :if => os[:family] == 'redhat' do
+# enabel bond0
+describe bond('bond0'), :if => os[:family] == 'redhat' do
   it { should exist }
+  it { should have_interface 'enp0s3' }
+  it { should have_interface 'enp0s8' }
 end
 
 # enable chronyd
