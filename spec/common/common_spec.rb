@@ -45,17 +45,16 @@ describe command('systemctl get-default'), :if => os[:family] == 'redhat' do
   its(:stdout) { should match "multi-user.target" }
 end
 
-# disable selinux
-describe selinux, :if => os[:family] == 'redhat' do
-  it { should be_disabled }
-end
-
 # check rpmlist
 rpmlist = File.read('spec/common/files/rpmlist.txt')
 describe command('rpm -qa | sort'), :if => os[:family] == 'redhat' do
   its(:stdout) { should match rpmlist }
 end
 
+# disable selinux
+describe selinux, :if => os[:family] == 'redhat' do
+  it { should be_disabled }
+end
 
 # disable dns
 describe file('/etc/nsswitch.conf'), :if => os[:family] == 'redhat' do
