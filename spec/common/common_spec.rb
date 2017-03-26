@@ -92,6 +92,11 @@ describe bond('bond0'), :if => os[:family] == 'redhat' do
   it { should have_interface 'enp0s8' }
 end
 
+describe default_gateway do
+  its(:interface) { should eq 'bond0'          }
+  its(:ipaddress) { should eq 'xxx.xxx.xxx.xxx' }
+end
+
 # enable chronyd
 describe service('chronyd'), :if => os[:family] == 'redhat' do
   it { should be_enabled }
