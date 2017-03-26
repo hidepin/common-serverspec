@@ -39,8 +39,6 @@ end
 describe command("fdisk -s /dev/sda4") do
   its('stdout.to_i') { should >= host_inventory['memory']['total'].to_i * 2 }
 end
-# check partition size
-
 
 # disable selinux
 describe selinux, :if => os[:family] == 'redhat' do
